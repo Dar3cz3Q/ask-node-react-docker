@@ -1,0 +1,37 @@
+api:
+  dashboard: true
+  insecure: true
+
+entryPoints:
+  web:
+    address: :80
+  websecure:
+    address: :443
+
+certificatesResolvers:
+  staging:
+    acme:
+      email: darekhoma1337@gmail.com
+      storage: /etc/traefik/certs/acme.json
+      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+  localhost:
+    acme:
+      email: darekhoma1337@gmail.com
+      storage: /etc/traefik/certs/acme.json
+      dnsChallenge:
+        provider: duckdns
+  production:
+    acme:
+      email: darekhoma1337@gmail.com
+      storage: /etc/traefik/certs/acme.json
+      httpChallenge:
+        entryPoint: web
+
+providers:
+  docker:
+    exposedByDefault: false
+  file:
+    directory: /etc/traefik
+    watch: true

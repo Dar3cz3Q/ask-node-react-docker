@@ -34,10 +34,10 @@ export default function Layout() {
         <nav className="pointer-events-auto md:block">
           <ul className="flex px-3 text-sm font-medium">
             <li>
-              <ActionButton callback={loadData} icon="cloud" text="Load data" />
+              <ActionButton callback={loadData} icon="cloud" text="Load data (pobierz dane)" />
             </li>
             <li>
-              <ActionButton callback={flushData} icon="delete" text="Flush data" />
+              <ActionButton callback={flushData} icon="delete" text="Flush data (usun dane)" />
             </li>
           </ul>
         </nav>

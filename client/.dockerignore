@@ -1,1 +1,4 @@
 # Tutaj należy dodać pliki/katalogi pomijane przy wykonywaniu polecenia COPY
+node_modules
+build
+npm-debug.log

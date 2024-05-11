@@ -1,2 +1,104 @@
 # Tutaj należy umieścić serwisy dla aplikacji klienckiej oraz serwerowej,
 # a także bazy danych. W Lab3 ma znaleźć się tutaj również phpmyadmin.
+
+services:
+  phpmyadmin:
+    container_name: phpmyadmin
+    hostname: phpmyadmin
+    depends_on:
+      - db
+    image: phpmyadmin:latest
+    restart: always
+    environment:
+      PMA_HOST: database
+    labels:
+      traefik.enable: true
+      traefik.docker.network: proxy
+      traefik.http.routers.phpmyadmin.entrypoints: web, websecure
+      traefik.http.routers.phpmyadmin.rule: Host(`dhoma-local.duckdns.org`)
+      traefik.http.routers.phpmyadmin.tls: true
+      traefik.http.routers.phpmyadmin.tls.certresolver: localhost
+      "traefik.http.routers.phpmyadmin.tls.domains[0].main": dhoma-local.duckdns.org
+    networks:
+      - database
+      - proxy
+
+  db:
+    container_name: database
+    hostname: database
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: Zaq12wsx
+      MYSQL_DATABASE: dockerdb
+      MYSQL_USER: dockerdb
+      MYSQL_PASSWORD: Zaq12wsx
+    volumes:
+      - ~/ask-node-react-docker/db:/docker-entrypoint-initdb.d
+    networks:
+      - backend
+      - database
+
+  node:
+    container_name: node
+    hostname: node
+    depends_on:
+      - db
+    build:
+      context: server/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      NODE_ENV: development
+      PORT: 8080
+      IP: 127.0.0.1
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: dockerdb
+      DB_USER: dockerdb
+      DB_PSWD: Zaq12wsx
+    volumes:
+      - ~/ask-node-react-docker/server/src:/app/src
+    networks:
+      - frontend
+      - backend
+
+  react:
+    container_name: react
+    hostname: react
+    depends_on:
+      - node
+    build:
+      context: client/
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
+      - CI=true
+    ports:
+      - "3333:3000"
+    volumes:
+      - ~/ask-node-react-docker/client/src:/app/src
+      - ~/ask-node-react-docker/client/public:/app/public
+    networks:
+      - frontend
+
+networks:
+  database:
+    name: database
+    ipam:
+      config:
+        - subnet: 172.18.67.0/24
+  backend:
+    name: backend
+    ipam:
+      config:
+        - subnet: 172.38.67.0/24
+  frontend:
+    name: frontend
+    ipam:
+      config:
+        - subnet: 172.58.67.0/24
+  proxy:
+    name: proxy
+    external: true

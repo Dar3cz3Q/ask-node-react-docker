@@ -1,1 +1,31 @@
 # Tutaj ma znaleźć się konfiguracja Traefika w Lab3
+services:
+  traefik:
+    container_name: traefik
+    hostname: traefik
+    image: traefik:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/traefik.yaml:/etc/traefik/traefik.yaml:ro
+      - ./traefik/conf/:/etc/traefik/conf/
+      - ./traefik/certs/:/etc/traefik/certs/
+    networks:
+      - proxy
+    labels:
+      traefik.enable: true
+      traefik.docker.network: proxy
+      traefik.http.routers.traefik.entrypoints: web
+      traefik.http.routers.traefik.rule: Host(`traefik.localhost`)
+      traefik.http.services.traefik.loadbalancer.server.port: 8080
+      traefik.http.routers.traefik.service: api@internal
+
+networks:
+  proxy:
+    name: proxy
+    ipam:
+      config:
+        - subnet: 172.98.67.0/24

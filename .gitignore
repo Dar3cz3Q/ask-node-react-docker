@@ -1,3 +1,10 @@
+# Yaml environment
+*.env.*
+
+# SSL Cert
+traefik/certs
+traefik/conf
+
 # Logs
 logs
 *.log

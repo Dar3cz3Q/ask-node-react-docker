@@ -36,14 +36,8 @@ resource "aws_security_group" "ask_docker_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
-    from_port   = var.http_port
-    to_port     = var.http_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    from_port   = var.https_port
-    to_port     = var.https_port
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

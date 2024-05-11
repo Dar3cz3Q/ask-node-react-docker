@@ -1,0 +1,23 @@
+services:
+  react:
+    container_name: react
+    image: nginx-react:0.1
+    environment:
+      NGINX_ENVSUBST_OUTPUT_DIR: "/etc/nginx/nginx.conf"
+    labels:
+      traefik.enable: true
+      traefik.docker.network: proxy
+      traefik.http.routers.react.entrypoints: web, websecure
+      traefik.http.routers.react.rule: Host(`app.dhoma.duckdns.org`)
+      traefik.http.services.react.loadbalancer.server.port: 80
+      traefik.http.routers.react.tls: true
+      traefik.http.routers.react.tls.certresolver: production
+      #"traefik.http.routers.react.tls.domains[0].main": dhoma.duckdns.org
+      #"traefik.http.routers.react.tls.domains[0].sans": "*.dhoma.duckdns.org"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
